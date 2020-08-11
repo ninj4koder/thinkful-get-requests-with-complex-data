@@ -9,11 +9,9 @@ function formatQueryParams(params) {
 }
 
 function displayResults(responseJson) {
-  console.log(responseJson);
   // if there are previous results, remove them
   $('#results-list').empty();
-  $('#results-list').append(
-      `<h2>You have ${responseJson.data.length} results</h2>`);
+  $(`<h2>You have ${responseJson.data.length} results</h2>`).insertBefore('#results-list');
   // iterate through the data array
   for (let i = 0; i < responseJson.data.length; i++)  {
     // for each park in the data 
@@ -30,25 +28,16 @@ function displayResults(responseJson) {
       <p><b>Street:</b> ${address.line1}</p>
       <p><b>City:</b> ${address.city}</p>
       <p><b>Postal Code:</b> ${address.postalCode}</p>`;
-      console.log(addressReceived);
       addresses.push(addressReceived);
     })
 
-    addresses = addresses.join('');
-   
+    addresses = addresses.join('');   
     $('#results-list').append(
       `<li><h3>${responseJson.data[i].fullName}</h3>
       <p>${responseJson.data[i].description}</p>
       <p><a href="${responseJson.data[i].url}">${responseJson.data[i].url}</a></p>
       <h3>Available addresses:</h3>
       <div class="address">${addresses}</div>`);
-
-      
-
-    
-    // console.log(addressReceived);
-      
-      // $('#results-list').append(`</li>`);
     };
     console.log(responseJson.data[0].addresses[0]);
 };
@@ -62,13 +51,13 @@ function getParksList(query, maxResults=10) {
   const queryString = formatQueryParams(params)
   const url = searchURL + '?' + queryString;
   $('#results-list').empty();
-  $('#results-list').append(
-    `<h2>Fetching data...</h2>`);
+  $('<h2>Fetching data...</h2>').insertBefore('#results-list');
 
   fetch(url)
     .then(response => {
       if (response.ok) {
         $('#js-error-message').empty(); //removes any text if there was any from the previous unsuccesfull search)
+
         return response.json();
       }
       throw new Error(response.statusText);
