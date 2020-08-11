@@ -18,21 +18,39 @@ function displayResults(responseJson) {
   for (let i = 0; i < responseJson.data.length; i++)  {
     // for each park in the data 
     //array, add a list item to the results 
-    //list with the full name, description,
-    //and link
+    //list with the full name, description, link and addresses
+    // responseJson.data[i].addresses.forEach(function(address) {
+    //   console.log(address.city);
+    // });
+    let addresses = [];
+
+    responseJson.data[i].addresses.forEach(function(address, index)  {
+      let addressReceived = 
+      `<h4>Address ${index + 1}</h4>
+      <p><b>Street:</b> ${address.line1}</p>
+      <p><b>City:</b> ${address.city}</p>
+      <p><b>Postal Code:</b> ${address.postalCode}</p>`;
+      console.log(addressReceived);
+      addresses.push(addressReceived);
+    })
+
+    addresses = addresses.join('');
+   
     $('#results-list').append(
       `<li><h3>${responseJson.data[i].fullName}</h3>
       <p>${responseJson.data[i].description}</p>
-      <p><a href="${responseJson.data[i].url}">${responseJson.data[i].url}</a></p>`);
-      for (let j = 0; j < responseJson.data[i].addresses.length; j++)  {
-        $('#results-list').append(
-          `<h4>Address ${j+1}</h4>
-          <p><b>City:</b> ${responseJson.data[i].addresses[j].city}</p>
-          <p><b>Street:</b> ${responseJson.data[i].addresses[j].line1}</p>
-          <p><b>Postal code:</b> ${responseJson.data[i].addresses[j].postalCode}</p>
-          <p><b>State:</b> ${responseJson.data[i].addresses[j].stateCode}</p>`);
-      }
+      <p><a href="${responseJson.data[i].url}">${responseJson.data[i].url}</a></p>
+      <h3>Available addresses:</h3>
+      <div class="address">${addresses}</div>`);
+
+      
+
+    
+    // console.log(addressReceived);
+      
+      // $('#results-list').append(`</li>`);
     };
+    console.log(responseJson.data[0].addresses[0]);
 };
 
 function getParksList(query, maxResults=10) {
@@ -50,6 +68,7 @@ function getParksList(query, maxResults=10) {
   fetch(url)
     .then(response => {
       if (response.ok) {
+        $('#js-error-message').empty(); //removes any text if there was any from the previous unsuccesfull search)
         return response.json();
       }
       throw new Error(response.statusText);
@@ -57,6 +76,7 @@ function getParksList(query, maxResults=10) {
     .then(responseJson => displayResults(responseJson))
     .catch(err => {
       $('#js-error-message').text(`Something went wrong: ${err.message}`);
+      $('#results-list').empty();
     });
 }
 
